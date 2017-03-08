@@ -1,0 +1,4 @@
+* Add setup.py et.al to make a package out of it
+* add [scripts] section to setup.py and make a module out of the functions
+* refacture a bit
+* add more default subdomains to scan for

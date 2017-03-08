@@ -1,0 +1,4 @@
+env
+*.swp
+activate.sh
+__pycache__
