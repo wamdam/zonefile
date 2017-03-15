@@ -42,7 +42,7 @@ def get_domain_data(resolver, domain, dont_check_these_rrtypes=None):
     else:
         rrq = ('CNAME', 'NS', 'A', 'MX', 'AAAA', 'DNSKEY', 'RRSIG', 'TXT', 'SRV')
     for rrtype in rrq:
-        if rrtype in dont_check_these_rrtypes:
+        if rrtype in dont_check_these_rrtypes or 'CNAME' in dont_check_these_rrtypes or 'NS' in dont_check_these_rrtypes:
             continue
         try:
             _answer = resolver.query(domain, rrtype)
