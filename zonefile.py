@@ -20,15 +20,18 @@ def get_resolver(domain):
     return resolver
 
 
-def get_domain_data(resolver, domain):
+def get_domain_data(resolver, domain, dont_check_these_rrtypes=None):
     # this gets for exactly this domain all available data
     # by asking the responsible nameserver for ANY.
     #
     # Params:
     #   resolver: a dns.resolver.Resolver instance
     #   domain: The domain to resolve
+    #   dont_check_these_rrtypes: a set / list of rrtypes which should not be checked
     # Returns a list of LINE_TPLs filled with the found data.
 
+    if not dont_check_these_rrtypes:
+        dont_check_these_rrtypes = set()
     answers = []
     candidates = []  # new subdomain candidates
     _domain = dns.name.from_text(domain)
@@ -39,6 +42,8 @@ def get_domain_data(resolver, domain):
     else:
         rrq = ('CNAME', 'NS', 'A', 'MX', 'AAAA', 'DNSKEY', 'RRSIG', 'TXT', 'SRV')
     for rrtype in rrq:
+        if rrtype in dont_check_these_rrtypes:
+            continue
         try:
             _answer = resolver.query(domain, rrtype)
         except dns.resolver.NoAnswer:
@@ -54,7 +59,8 @@ def get_domain_data(resolver, domain):
                 'data': 'UNABLE TO RESOLVE',
                 'success': False,
                 })
-            break
+            #break
+            continue
         for _a in _answer:
             answers.append({
                 'name': zone_name,
@@ -91,14 +97,29 @@ def resolve(domain, subdomains):
 
     candidates = []
     answers = []
+    wildcard_rrtypes = set()
 
     _candidates, _answers = get_domain_data(resolver, domain)
     candidates.extend(_candidates)
     answers.extend(_answers)
 
     # TODO: refacture, this is duplicate code
+
+    # see if there is a wildcard entry (in depth 1)
+    WILDCARD_TEST_SUBDOMAIN = 'thisdoesn0texisthaha'
+    _candidates, _answers = get_domain_data(resolver, WILDCARD_TEST_SUBDOMAIN+'.'+domain)
+    candidates.extend(_candidates)
+    if _answers and any([a['success'] for a in _answers]):
+        for _answer in _answers:  # check for all rrtypes which are wildcard
+            if not _answer['success']:
+                continue
+            _answer['name'] = '*'
+            answers.append(_answer)
+            wildcard_rrtypes.add(_answer['type'])  # = which rrtypes are wildcard in depth 1
+
+    # check subdomains
     for subdomain in subdomains:
-        _candidates, _answers = get_domain_data(resolver, subdomain+'.'+domain)
+        _candidates, _answers = get_domain_data(resolver, subdomain+'.'+domain, wildcard_rrtypes)
         candidates.extend(_candidates)
         answers.extend(_answers)
 
@@ -109,6 +130,8 @@ def resolve(domain, subdomains):
                 candidates.extend(_candidates)
                 answers.extend(_answers)
 
+    # check the subdomains which came back from previous queries as candidates,
+    # like an mx entry
     for subdomain in candidates:
         if subdomain not in subdomains:
             _candidates, _answers = get_domain_data(resolver, subdomain+'.'+domain)

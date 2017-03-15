@@ -2,4 +2,4 @@
 * add [scripts] section to setup.py and make a module out of the functions
 * refacture a bit
 * add more default subdomains to scan for
-* Check if this is a "*" subdomain by checking against some stupid name and define it as such.
+* Check for depth 2+ wildcards
