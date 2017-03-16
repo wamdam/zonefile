@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-DEFAULT_SUBDOMAINS = [
+DEFAULT_LABELS = [
     'www',
     'mail',
     'autodiscover',
@@ -34,7 +34,7 @@ DEFAULT_SUBDOMAINS = [
     'sip',
     'www2',
     ]
-DEFAULT_SUBSUBDOMAINS = [
+DEFAULT_2NDLABELS = [
     's1024._domainkey',
     '_adsp._domainkey',
     '_domainkey',

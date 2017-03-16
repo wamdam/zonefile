@@ -3,7 +3,7 @@ import argparse
 import datetime
 import dns.resolver
 import dns.name
-from config import DEFAULT_SUBDOMAINS, DEFAULT_SUBSUBDOMAINS, ZONE_TPL, LINE_TPL
+from config import DEFAULT_LABELS, DEFAULT_2NDLABELS, ZONE_TPL, LINE_TPL
 
 
 def get_resolver(domain):
@@ -125,7 +125,7 @@ def resolve(domain, subdomains):
 
         if _answers and any([a['success'] for a in _answers]):
             # also generated entries
-            for subsub in DEFAULT_SUBSUBDOMAINS:
+            for subsub in DEFAULT_2NDLABELS:
                 _candidates, _answers = get_domain_data(resolver, subsub+'.'+subdomain+'.'+domain)
                 candidates.extend(_candidates)
                 answers.extend(_answers)
@@ -140,7 +140,7 @@ def resolve(domain, subdomains):
 
             if _answers and any([a['success'] for a in _answers]):
                 # also generated entries
-                for subsub in DEFAULT_SUBSUBDOMAINS:
+                for subsub in DEFAULT_2NDLABELS:
                     _candidates, _answers = get_domain_data(resolver, subsub+'.'+subdomain+'.'+domain)
                     candidates.extend(_candidates)
                     answers.extend(_answers)
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     parser.add_argument('--quiet', '-q', help='Do not write commented out entries with lookup failures', action='store_true')
     args = parser.parse_args()
 
-    subdomain = args.subdomain if args.subdomain else DEFAULT_SUBDOMAINS
+    subdomain = args.subdomain if args.subdomain else DEFAULT_LABELS
 
     data = resolve(args.domain, subdomain)
 
