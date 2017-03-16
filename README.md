@@ -31,9 +31,9 @@ Edit `config.py` to match your needs. You will most likely want to change the
 `ZONE_TPL` to reflect your SOA and NS entries.
 
 If you expect interesting other subdomains which should be scanned, just add
-them to the list of `DEFAULT_SUBDOMAINS`.
+them to the list of `DEFAULT_LABELS`.
 
-The `DEFAULT_SUBSUBDOMAINS` will be prepended to any existing subdomain, so
+The `DEFAULT_2NDLABELS` will be prepended to any existing subdomain, so
 for example the `_domainkey` subsubdomain will be tried as
 `_domainkey.sub.domain.com`. Just extend that list to your needs.
 
