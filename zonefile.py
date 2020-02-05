@@ -7,7 +7,7 @@ from config import DEFAULT_LABELS, DEFAULT_2NDLABELS, ZONE_TPL, LINE_TPL
 
 
 def get_resolver(domain):
-    nameservers = []
+    nameservers = ['8.8.8.8']
     _a_ns = dns.resolver.query(domain, 'NS')
     for _a in _a_ns:
         _a_ns_ips = dns.resolver.query(_a.to_text(), 'A')
